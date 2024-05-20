@@ -1,15 +1,34 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ReactDOMServer from 'react-dom/server'
-import { schedule } from './data'
 import './ScheduleSVG.css'
+import scheduledata from './schedule.json'
 
 const ScheduleSVG = () => {
-  const generateSVG = () => {
+  useEffect(() => {
+    // 在組件加載完成後輸出資訊
+    console.log(scheduledata.speakers)
+  }, [])
+
+  const extractTime = (dateTimeString) => {
+    const date = new Date(dateTimeString)
+    const hours = date.getHours().toString().padStart(2, '0')
+    const minutes = date.getMinutes().toString().padStart(2, '0')
+    return `${hours}:${minutes}`
+  }
+
+  const getSpeakerName = (id) => {
+    const speaker = scheduledata.speakers.find(
+      (speaker) => speaker.id.toString() === id.toString()
+    )
+    return speaker ? speaker.zh.name : ''
+  }
+
+  const generateSVG = ({ sessions }) => {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="600"
-        height={`${40 + schedule.length * 40}`}
+        height={`${40 + sessions.length * 40}`}
       >
         <style>
           {`
@@ -19,13 +38,13 @@ const ScheduleSVG = () => {
             .speaker { fill: #000000; }
           `}
         </style>
-        {schedule.map((item, index) => {
+        {sessions.map((session, index) => {
           const yPosition = 30 + index * 40
           const rectHeight = 20
           const rectRadius = 10
 
           return (
-            <g key={index}>
+            <g key={session.id}>
               <rect
                 x="0"
                 y={yPosition - rectHeight + 5}
@@ -35,15 +54,25 @@ const ScheduleSVG = () => {
                 ry={rectRadius}
                 fill="#007bff"
               />
+              {/* 時間 */}
               <text x="10" y={yPosition} className="time">
-                {item.time}
+                {extractTime(session.start)}
               </text>
+
+              {/* 中文標題 */}
               <text x="80" y={yPosition} className="title">
-                {item.title}
+                {session.zh.title}
               </text>
-              {item.speaker && (
+
+              {/* 英文標題 */}
+              <text x="80" y={yPosition+20} className="title">
+                {session.en.title}
+              </text>
+
+              {/* 講者 */}
+              {session.speakers && (
                 <text x="300" y={yPosition} className="speaker">
-                  {item.speaker}
+                  {getSpeakerName(session.speakers)}
                 </text>
               )}
             </g>
@@ -55,7 +84,7 @@ const ScheduleSVG = () => {
 
   const downloadSVG = () => {
     // 把 React 的元素轉換為正常的 html 字串
-    const svgContent = ReactDOMServer.renderToStaticMarkup(generateSVG())
+    const svgContent = ReactDOMServer.renderToStaticMarkup(generateSVG({ sessions: scheduledata.sessions }))
     const blob = new Blob([svgContent], { type: 'image/svg+xml' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
@@ -68,7 +97,9 @@ const ScheduleSVG = () => {
 
   return (
     <div>
-      <div className="svg-container">{generateSVG()}</div>
+      <div className="svg-container">
+        {generateSVG({ sessions: scheduledata.sessions })}
+      </div>
       <button className="download-button" onClick={downloadSVG}>
         Download as SVG
       </button>
