@@ -20,7 +20,7 @@ const ScheduleSVG = () => {
 
   useEffect(() => {
     // 在組件加載完成後輸出資訊
-    console.log(scheduledata.speakers) 
+    console.log(scheduledata.sessions) 
   }, [])
 
   // 提取所有的唯一日期
@@ -68,7 +68,7 @@ const ScheduleSVG = () => {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="600"
+        width="1000"
         height={`${40 + sessions.length * 40}`}
       >
         <style>
@@ -112,8 +112,13 @@ const ScheduleSVG = () => {
 
               {/* 講者 */}
               {session.speakers && (
-                <text x="300" y={yPosition} className="speaker">
-                  {getSpeakerName(session.speakers)}
+                <text x="500" y={yPosition} className="speaker">
+                  {session.speakers.map((speakerId, index) => (
+                    <tspan key={index} x="700" dy="1.2em">
+                      {getSpeakerName(speakerId)}
+                      {index !== session.speakers.length - 1 && ', '}
+                    </tspan>
+                  ))}
                 </text>
               )}
             </g>
