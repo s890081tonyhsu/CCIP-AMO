@@ -38,10 +38,12 @@ const ScheduleSVG = () => {
   // 根據選擇的日期和場地過濾議程
   useEffect(() => {
     if (selectedDate && selectedRoom) {
-      const filtered = scheduledata.sessions.filter((session) => {
-        const sessionDate = session.start.split('T')[0]
-        return sessionDate === selectedDate && session.room === selectedRoom
-      })
+      const filtered = scheduledata.sessions
+        .filter((session) => {
+          const sessionDate = session.start.split('T')[0]
+          return sessionDate === selectedDate && session.room === selectedRoom
+        })
+        .sort((a, b) => new Date(a.start) - new Date(b.start)) // 根據時間排序
       setFilteredSessions(filtered)
     } else {
       setFilteredSessions([])
