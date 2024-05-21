@@ -5,10 +5,12 @@ import scheduledata from './schedule.json'
 
 const ScheduleSVG = () => {
   const [selectedDate, setSelectedDate] = useState(null)
+  const [selectedRoom, setSelectedRoom] = useState(null)
+  const [filteredSessions, setFilteredSessions] = useState([])
 
   useEffect(() => {
     // 在組件加載完成後輸出資訊
-    console.log(scheduledata.speakers)
+    console.log(scheduledata.speakers) 
   }, [])
 
   // 提取所有的唯一日期
@@ -17,12 +19,24 @@ const ScheduleSVG = () => {
     return [...new Set(dates)]
   }
 
-  // 根據選擇的日期過濾議程
-  const filteredSessions = selectedDate
-    ? scheduledata.sessions.filter((session) =>
-        session.start.includes(selectedDate)
-      )
-    : scheduledata.sessions
+  // 提取所有的唯一場地
+  const getUniqueRooms = (sessions) => {
+    const rooms = sessions.map((session) => session.room)
+    return [...new Set(rooms)]
+  }
+
+  // 根據選擇的日期和場地過濾議程
+  useEffect(() => {
+    if (selectedDate && selectedRoom) {
+      const filtered = scheduledata.sessions.filter((session) => {
+        const sessionDate = session.start.split('T')[0]
+        return sessionDate === selectedDate && session.room === selectedRoom
+      })
+      setFilteredSessions(filtered)
+    } else {
+      setFilteredSessions([])
+    }
+  }, [selectedDate, selectedRoom])
 
   const extractTime = (dateTimeString) => {
     const date = new Date(dateTimeString)
@@ -117,17 +131,43 @@ const ScheduleSVG = () => {
       <div>
         {/* 生成日期選擇按鈕 */}
         {getUniqueDates(scheduledata.sessions).map((date, index) => (
-          <button key={index} onClick={() => setSelectedDate(date)}>
+          <button
+            key={index}
+            onClick={() => setSelectedDate(date)}
+            className={`button ${
+              selectedDate === date ? 'selected-button' : ''
+            }`}
+          >
             {date}
           </button>
         ))}
       </div>
+      {selectedDate && (
+        <div>
+          {/* 生成場地選擇按鈕 */}
+          {getUniqueRooms(scheduledata.sessions).map((room, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedRoom(room)}
+              className={`button ${
+                selectedRoom === room ? 'selected-button' : ''
+              }`}
+            >
+              {room}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="svg-container">
-        {generateSVG({ sessions: filteredSessions })}
+        {filteredSessions.length > 0
+          ? generateSVG({ sessions: filteredSessions })
+          : ''}
       </div>
-      <button className="download-button" onClick={downloadSVG}>
-        Download as SVG
-      </button>
+      {filteredSessions.length > 0 && (
+        <button className="download-button" onClick={downloadSVG}>
+          Download as SVG
+        </button>
+      )}
     </div>
   )
 }
