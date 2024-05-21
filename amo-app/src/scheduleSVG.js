@@ -7,6 +7,16 @@ const ScheduleSVG = () => {
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedRoom, setSelectedRoom] = useState(null)
   const [filteredSessions, setFilteredSessions] = useState([])
+  const [filteredSpeakers, setFilteredSpeakers] = useState([])
+
+  useEffect(() => {
+    // 過濾掉 id 為 null 的講者
+    const validSpeakers = scheduledata.speakers.filter(
+      (speaker) => speaker.id !== null
+    )
+    setFilteredSpeakers(validSpeakers)
+    console.log(validSpeakers)
+  }, [])
 
   useEffect(() => {
     // 在組件加載完成後輸出資訊
@@ -46,7 +56,7 @@ const ScheduleSVG = () => {
   }
 
   const getSpeakerName = (id) => {
-    const speaker = scheduledata.speakers.find(
+    const speaker = filteredSpeakers.find(
       (speaker) => speaker.id.toString() === id.toString()
     )
     return speaker ? speaker.zh.name : ''
