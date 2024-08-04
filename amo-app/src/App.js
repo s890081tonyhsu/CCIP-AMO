@@ -1,7 +1,19 @@
-import React from 'react'
-import ScheduleSVG from './scheduleSVG'
+import React, { useEffect, useState } from 'react'
+import ScheduleSVG from './ScheduleSVG'
 
 function App() {
+  const [schedule, setSchedule] = useState(null)
+
+  useEffect(() => {
+    const getSchedule = async () => {
+      const response = await fetch('./schedule.json');
+      const result = await response.json();
+      setSchedule(result);
+    }
+
+    getSchedule()
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
@@ -9,7 +21,8 @@ function App() {
       </header>
       <div className="container">
         <div className="sidebar">
-          <ScheduleSVG />
+          {/* <ScheduleSVG /> */}
+          {schedule && <ScheduleSVG scheduleData={schedule} />}
         </div>
       </div>
     </div>
