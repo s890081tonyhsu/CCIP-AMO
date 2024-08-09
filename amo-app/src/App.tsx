@@ -1,11 +1,11 @@
 import { ChangeEvent, useState } from 'react';
 
 import './assets/css/App.css';
-import type { Schedule } from './types/schedule';
+import type { OpassSchedule } from './types/opass/schedule';
 
 function App() {
   const [errorMsg, setErrorMsg] = useState<string>('');
-  const [schedule, setSchedule] = useState<Schedule | null>(null);
+  const [schedule, setSchedule] = useState<OpassSchedule | null>(null);
 
   const handleReadfile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -13,7 +13,7 @@ function App() {
 
     try {
       const content = await file.text();
-      const nextSchedule = JSON.parse(content) as Schedule;
+      const nextSchedule = JSON.parse(content) as OpassSchedule;
       setSchedule(nextSchedule);
     } catch (error: unknown) {
       if (error instanceof Error) {

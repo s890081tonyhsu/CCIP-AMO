@@ -1,5 +1,3 @@
-export type TranslationKey = 'en' | 'zh';
-
 export type SessionTranslation = {
   title: string;
   description: string;

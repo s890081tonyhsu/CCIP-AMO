@@ -2,16 +2,17 @@ import {
   GeneralTranslation,
   SessionTranslation,
   SpeakerTranslation,
-  TranslationKey,
 } from './translations';
+import { TranslationKey } from '../translationKey';
 
-export type Session = {
+export type OpassSession = {
   [key in TranslationKey]: SessionTranslation;
 } & {
   id: string;
   type: string;
   room: string;
   start: string;
+  end: string;
   broadcast?: string[] | null,
   qa?: string | null;
   slide?: string | null;
@@ -20,11 +21,11 @@ export type Session = {
   record?: null;
   language?: null;
   uri?: string | null;
-  speakers?: (string | null)[] | null;
-  tags?: (string | null)[] | null;
+  speakers: string[];
+  tags: string [];
 };
 
-export type Speaker = {
+export type OpassSpeaker = {
   [key in TranslationKey]: SpeakerTranslation;
 } & {
   id: string;
@@ -35,9 +36,9 @@ type session_type = GeneralTranslation;
 type room = GeneralTranslation;
 type tag = GeneralTranslation;
 
-export type Schedule = {
-  sessions: Session[];
-  speakers: Speaker[];
+export type OpassSchedule = {
+  sessions: OpassSession[];
+  speakers: OpassSpeaker[];
   session_types: session_type[];
   rooms: room[];
   tags: tag[];
