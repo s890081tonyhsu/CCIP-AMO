@@ -1,11 +1,20 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
+import dayjs from 'dayjs';
+
+import { Filter } from './components';
+import OpassToAmoSchedule from './adapters/OpassToAmoSchedule';
+
+import type { AmoSession } from './types/amo/schedule';
+import type { FilterEntries } from './types/filter';
+import type { OpassSchedule } from './types/opass/schedule';
+
 
 import './assets/css/App.css';
-import type { OpassSchedule } from './types/opass/schedule';
 
 function App() {
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [schedule, setSchedule] = useState<OpassSchedule | null>(null);
+  const [filteredSessions, setFilteredSessions] = useState<AmoSession[]>([]);
 
   const handleReadfile = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -22,6 +31,20 @@ function App() {
     }
   };
 
+  const handleFilter = useCallback((obj: FilterEntries) => {
+    if (!schedule) return;
+
+    const { date, room } = obj;
+    const targetDate = dayjs(date) ?? null;
+    const convertedSessions = OpassToAmoSchedule(schedule);
+    const nextFilterSessions = convertedSessions.filter(session => {
+      if (targetDate && !session.start.isSame(targetDate, 'day')) return false;
+      if (room !== '' && session.room !== room) return false;
+      return true;
+    });
+    setFilteredSessions(nextFilterSessions);
+  }, [schedule]);
+
   return (
     <div>
       <h1>Agenda</h1>
@@ -29,7 +52,8 @@ function App() {
       {errorMsg && (
         <p style={{ color: 'red' }}>{errorMsg}</p>
       )}
-      <pre>{JSON.stringify(schedule, null, 2)}</pre>
+      <Filter sessions={schedule?.sessions ?? []} onFilter={handleFilter} />
+      <pre>{JSON.stringify(filteredSessions, null, 2)}</pre>
     </div>
   );
 }
