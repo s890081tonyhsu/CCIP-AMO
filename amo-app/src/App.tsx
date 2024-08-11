@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 
 import { Filter } from './components';
 import OpassToAmoSchedule from './adapters/OpassToAmoSchedule';
+import { SimpleList } from './templates';
 
 import type { AmoSession } from './types/amo/schedule';
 import type { FilterEntries } from './types/filter';
@@ -53,7 +54,7 @@ function App() {
         <p style={{ color: 'red' }}>{errorMsg}</p>
       )}
       <Filter sessions={schedule?.sessions ?? []} onFilter={handleFilter} />
-      <pre>{JSON.stringify(filteredSessions, null, 2)}</pre>
+      <SimpleList sessions={filteredSessions} />
     </div>
   );
 }
