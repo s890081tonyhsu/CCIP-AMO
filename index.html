@@ -1,22 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMO -- An Agenda Maker Based on Opass Schedule Format</title>
+<script defer src="./static/js/lib-react.7f99f89d.js"></script><script defer src="./static/js/994.5da95c96.js"></script><script defer src="./static/js/index.0082ab97.js"></script><link href="./static/css/index.dc9bc24d.css" rel="stylesheet"></head>
 <body>
-  <h1>Schedule</h1>
-    <div id="scheduleData"></div>
-    <script>
-        // 使用 fetch API 從後端獲取資料
-        fetch('/getScheduleData')
-            .then(response => response.json())
-            .then(data => {
-                // 將資料顯示在網頁上
-                document.getElementById('scheduleData').innerText = JSON.stringify(data, null, 2);
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    </script>
+    <div id="root"></div>
 </body>
 </html>
